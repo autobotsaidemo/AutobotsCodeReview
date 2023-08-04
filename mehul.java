@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoreIssuesSqlExample {
+public   {
     public static void main(String[] args) {
         try {
             // Assuming you have a local MySQL database with a table called 'users'
