@@ -1,31 +1,19 @@
 name: Code Review
 
-permissions:
-  contents: read
-  pull-requests: write
-
 on:
-  pull_request:
-  pull_request_review_comment:
-    types: [created]
-
-concurrency:
-  group:
-    ${{ github.repository }}-${{ github.event.number || github.head_ref ||
-    github.sha }}-${{ github.workflow }}-${{ github.event_name ==
-    'pull_request_review_comment' && 'pr_comment' || 'pr' }}
-  cancel-in-progress: ${{ github.event_name != 'pull_request_review_comment' }}
+  issue_comment:
+    types: [created, edited]
 
 jobs:
-  review:
+  code-review:
     runs-on: ubuntu-latest
+    if: github.event.comment.user.login == 'adshao' && startsWith(github.event.comment.body, 'chatgpt')
     steps:
-      - uses: coderabbitai/ai-pr-reviewer@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        with:
-          model: gpt-4
-          debug: false
-          review_simple_changes: false
-          review_comment_lgtm: false
+    - name: OpenAI ChatGPT Code Review
+      uses: adshao/chatgpt-code-review-action@v0.2
+      with:
+        PROGRAMMING_LANGUAGE: 'JavaScript'
+        OPENAI_TOKEN: ${{ OPENAI_API_KEY }}
+        GITHUB_TOKEN: ${{ GITHUB_TOKEN }}
+        FULL_REVIEW_COMMENT: 'chatgpt'
+        REVIEW_COMMENT_PREFIX: 'chatgpt:'
